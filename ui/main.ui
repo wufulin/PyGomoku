@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>595</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 252, 241);</string>
+   </property>
+   <widget class="QTabWidget" name="infoWidget">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>171</width>
+      <height>461</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="tabMessages">
+     <attribute name="title">
+      <string>信息</string>
+     </attribute>
+     <widget class="QTableView" name="tableView">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>164</width>
+        <height>441</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tabScores">
+     <attribute name="title">
+      <string>排行榜</string>
+     </attribute>
+     <widget class="QTableView" name="tableView_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>164</width>
+        <height>441</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QTabWidget" name="hallWidget">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>80</y>
+      <width>551</width>
+      <height>411</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-color: rgb(225, 121, 25);
+background-color: rgb(255, 255, 248);</string>
+    </property>
+    <property name="tabPosition">
+     <enum>QTabWidget::North</enum>
+    </property>
+    <property name="tabShape">
+     <enum>QTabWidget::Triangular</enum>
+    </property>
+    <property name="elideMode">
+     <enum>Qt::ElideLeft</enum>
+    </property>
+    <widget class="QWidget" name="tabHall1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 229, 202);</string>
+     </property>
+     <attribute name="title">
+      <string>大厅1</string>
+     </attribute>
+     <widget class="QGroupBox" name="groupBox1">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>10</y>
+        <width>191</width>
+        <height>141</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>桌子1</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+      <widget class="QPushButton" name="pushButton">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>50</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>40</y>
+         <width>50</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QWidget" name="widget" native="true">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>40</y>
+         <width>55</width>
+         <height>55</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(159, 238, 255);</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>100</y>
+         <width>41</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>user1</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>100</y>
+         <width>41</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>user2</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox1_2">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>10</y>
+        <width>191</width>
+        <height>141</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>桌子2</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>50</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_4">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>40</y>
+         <width>50</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QWidget" name="widget_2" native="true">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>40</y>
+         <width>55</width>
+         <height>55</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(159, 238, 255);</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>100</y>
+         <width>41</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>user1</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>100</y>
+         <width>41</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>user2</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox1_3">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>200</y>
+        <width>191</width>
+        <height>141</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>桌子3</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+      <widget class="QPushButton" name="pushButton_5">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>50</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_6">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>40</y>
+         <width>50</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QWidget" name="widget_3" native="true">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>40</y>
+         <width>55</width>
+         <height>55</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(159, 238, 255);</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>100</y>
+         <width>41</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>user1</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_6">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>100</y>
+         <width>41</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>user2</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox1_4">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>200</y>
+        <width>191</width>
+        <height>141</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>桌子4</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+      <widget class="QPushButton" name="pushButton_7">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>50</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_8">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>40</y>
+         <width>50</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QWidget" name="widget_4" native="true">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>40</y>
+         <width>55</width>
+         <height>55</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(159, 238, 255);</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_7">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>100</y>
+         <width>41</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>user1</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>100</y>
+         <width>41</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>user2</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QTextEdit" name="textEdit">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>510</y>
+      <width>471</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnSend">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>510</y>
+      <width>71</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>发送</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="logoWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>191</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(207, 255, 214);</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="logoWidget_2" native="true">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>28</y>
+      <width>51</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(207, 255, 214);</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>30</y>
+      <width>62</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Frank</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>60</y>
+      <width>62</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>积分：10</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
