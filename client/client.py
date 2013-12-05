@@ -4,11 +4,12 @@
 __author__ = 'wufulin'
 
 import sys
-
+import math
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
+
 import chess
-import math
+import game
 
 class GomokuClient(QtGui.QWidget, chess.Ui_chessDialog):
     def __init__(self, parent=None):
@@ -127,19 +128,21 @@ class ChessBoard(QtGui.QWidget):
             n, m, x, y = self.locateTo(curX, curY)
             if self.count % 2 == 0:
                 self.list[n][m] = (float(x), float(y), self.WHITE_FLAGS)
+                result = self.isWin(self.list, n, m, self.WHITE_FLAGS)
             else:
                 self.list[n][m] = (float(x), float(y), self.BLACK_FLAGS)
+                result = self.isWin(self.list, n, m, self.BLACK_FLAGS)
             self.update()
 
-            result = self.isWin(self.list, n, m, 1)
+            #result = self.isWin(self.list, n, m, 1)
             if result:
-               pass
+               print("win")
 
-    def isWin(self, list, x, y, type):
+    def isWin(self, list, x, y, chesstype):
         """
         判断输赢
         """
-        return False
+        return game.whowin(list, x, y, chesstype)
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
