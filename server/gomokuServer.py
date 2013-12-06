@@ -82,6 +82,7 @@ class GomokuServer(object):
                         if data:
                             if type < 10:
                                 # 棋子消息
+                                print(data)
                                 self.broadcast_data(sock, data)
                             elif 100 < type < 1000:
                                 # 聊天消息

@@ -3,29 +3,54 @@
 
 __author__ = 'wufulin'
 
-import sys
+
+import select
+from socket import *
 import math
+import sys
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
 
 import chess
 import game
+from util.config import *
+from util.message import *
 
 class GomokuClient(QtGui.QWidget, chess.Ui_chessDialog):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
+        self.__init_socket()
         self.__init_ui()
+        #self.run()
 
     def __init_ui(self):
         self.setupUi(self)
-        self.chessboard = ChessBoard(self)
+        self.chessboard = ChessBoard(self, self.client_sock)
 
 
     def __init_socket(self):
-        pass
+        self.client_sock = socket(AF_INET, SOCK_STREAM)
+        self.client_sock.settimeout(2)
 
-    def start(self):
-        pass
+        try:
+            self.client_sock.connect(ADDR)
+        except Exception, e:
+            print('Unable to connect --> %s' % str(e))
+
+        print('Connected to remote host. Start sending messages')
+
+    def run(self):
+        while True:
+            self.socket_list = [self.client_sock]
+
+            # get the list sockets which are readable
+            read_sockets, write_sockets, error_sockets = select.select(self.socket_list, [], [])
+
+            for sock in read_sockets:
+                # incoming message from remote server
+                data = sock.recv(BUFSIZE)
+                print(data)
 
     def sendChessMessage(self):
         pass
@@ -47,7 +72,7 @@ class ChessBoard(QtGui.QWidget):
     chessWidth = 0.0
     chessHeight = 0.0
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, sock=None):
         super(ChessBoard, self).__init__(parent)
         self.setGeometry(QtCore.QRect(210, 20, 490, 490))
         self.whiteChessImage = QPixmap("../images/white.png")
@@ -58,6 +83,7 @@ class ChessBoard(QtGui.QWidget):
         self.halfGridWidth = self.gridWidth / 2
         self.limit = self.leftMargin + self.halfGridWidth
         self.count = 0
+        self.sock = sock
 
         # 初始化棋盘数组
         self.list = [[(0, 0, self.NONE_FLAGS)] * 16 for i in range(16)]
@@ -126,6 +152,7 @@ class ChessBoard(QtGui.QWidget):
             self.count += 1
             print('n = %d, m = %d, x = %d, y = %d' % (self.locateTo(curX, curY)))
             n, m, x, y = self.locateTo(curX, curY)
+            self.sock.send(ChessMessage(n, m, x, y, self.WHITE_FLAGS).dumps())
             if self.count % 2 == 0:
                 self.list[n][m] = (float(x), float(y), self.WHITE_FLAGS)
                 result = self.isWin(self.list, n, m, self.WHITE_FLAGS)
