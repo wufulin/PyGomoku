@@ -18,6 +18,7 @@ from util.config import *
 from util.message import *
 from util.tools import *
 
+
 class GomokuLogin(QtGui.QWidget, login.Ui_Dialog):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -169,13 +170,13 @@ class GomokuClient(QtGui.QWidget, chess.Ui_chessDialog):
         else:
             QtGui.QMessageBox.information(self, u"恭喜", u"黑棋赢了")
 
-        # TODO: 积分
+            # TODO: 积分
 
     def handleChessLoseMessage(self):
         self.setButtonStatus(False, False, True, False, True)
         whoLose = self.backthread.message.get_content()
         if whoLose == WHITE_FLAGS:
-             QtGui.QMessageBox.information(self, u"恭喜", u"白棋认输了")
+            QtGui.QMessageBox.information(self, u"恭喜", u"白棋认输了")
         else:
             QtGui.QMessageBox.information(self, u"恭喜", u"黑棋认输了")
 
@@ -211,7 +212,6 @@ class GomokuClient(QtGui.QWidget, chess.Ui_chessDialog):
 
 
 class BackendThread(QtCore.QThread):
-
     chessWinMsgReceived = QtCore.pyqtSignal()
     chessLoseMsgReceived = QtCore.pyqtSignal()
     chessPressed = QtCore.pyqtSignal()
@@ -261,7 +261,6 @@ class BackendThread(QtCore.QThread):
 
 
 class ChessBoard(QtGui.QWidget):
-
     leftMargin = rightMargin = 21.0
     gridWidth = 0.0
     halfGridWidth = 0.0
