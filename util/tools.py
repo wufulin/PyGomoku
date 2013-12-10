@@ -6,4 +6,4 @@ __author__ = 'wufulin'
 import time
 
 def now():
-    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    return time.strftime('%H:%M:%S', time.localtime())

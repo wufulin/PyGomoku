@@ -124,12 +124,12 @@
      <string>认输</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnDrawn">
+   <widget class="QPushButton" name="btnAgain">
     <property name="styleSheet">
      <string notr="true">background-color: rgb(224, 147, 62);</string>
     </property>
     <property name="text">
-     <string>和棋</string>
+     <string>再来一局</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btnBackMove">

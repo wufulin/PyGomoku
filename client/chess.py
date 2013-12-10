@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'chess.ui'
 #
-# Created: Tue Dec 10 11:20:44 2013
+# Created: Tue Dec 10 15:15:27 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -62,9 +62,9 @@ class Ui_chessDialog(object):
         self.btnLose = QtGui.QPushButton(self.splitter)
         self.btnLose.setStyleSheet(_fromUtf8("background-color: rgb(224, 147, 62);"))
         self.btnLose.setObjectName(_fromUtf8("btnLose"))
-        self.btnDrawn = QtGui.QPushButton(self.splitter)
-        self.btnDrawn.setStyleSheet(_fromUtf8("background-color: rgb(224, 147, 62);"))
-        self.btnDrawn.setObjectName(_fromUtf8("btnDrawn"))
+        self.btnAgain = QtGui.QPushButton(self.splitter)
+        self.btnAgain.setStyleSheet(_fromUtf8("background-color: rgb(224, 147, 62);"))
+        self.btnAgain.setObjectName(_fromUtf8("btnAgain"))
         self.btnBackMove = QtGui.QPushButton(self.splitter)
         self.btnBackMove.setStyleSheet(_fromUtf8("background-color: rgb(224, 147, 62);"))
         self.btnBackMove.setObjectName(_fromUtf8("btnBackMove"))
@@ -94,7 +94,7 @@ class Ui_chessDialog(object):
         self.btnSend.setText(_translate("chessDialog", "发送", None))
         self.btnStart.setText(_translate("chessDialog", "开始", None))
         self.btnLose.setText(_translate("chessDialog", "认输", None))
-        self.btnDrawn.setText(_translate("chessDialog", "和棋", None))
+        self.btnAgain.setText(_translate("chessDialog", "再来一局", None))
         self.btnBackMove.setText(_translate("chessDialog", "悔棋", None))
         self.btnLeave.setText(_translate("chessDialog", "离开", None))
         self.lblYou.setText(_translate("chessDialog", "You", None))

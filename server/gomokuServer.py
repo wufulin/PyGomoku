@@ -66,7 +66,7 @@ class GomokuServer(object):
                     socket.close()
                     self.connection_list.remove(socket)
 
-    def set_opponent(self, sock):
+    def setOpponent(self, sock):
         # 设置对手
         for socket in self.connection_list:
             if socket == sock:
@@ -84,6 +84,17 @@ class GomokuServer(object):
                     self.black_opponent = False
                     socket.close()
                     self.connection_list.remove(socket)
+
+    def clearOpponent(self, sock, data):
+        # 重置
+        for socket in self.connection_list:
+            if socket == sock:
+                type = data['content']
+                if type == 1:
+                    self.white_opponent = False
+                else:
+                    self.black_opponent = False
+                self.connection_list.remove(socket)
 
     def run(self):
         while True:
@@ -107,15 +118,25 @@ class GomokuServer(object):
                             if type < 10:
                                 # 棋子消息
                                 if type == CHESS_MESSAGE.START:
-                                    self.set_opponent(sock)
+                                    self.setOpponent(sock)
                                 elif type == CHESS_MESSAGE.STEP:
+                                    self.broadcast_data(sock, message.dumps())
+                                elif type == CHESS_MESSAGE.WIN:
+                                    self.broadcast_data(sock, message.dumps())
+                                elif type == CHESS_MESSAGE.LOSE:
+                                    self.broadcast_data(sock, message.dumps())
+                                elif type == CHESS_MESSAGE.REGRET:
+                                    self.broadcast_data(sock, message.dumps())
+                                elif type == CHESS_MESSAGE.AGAIN:
                                     self.broadcast_data(sock, message.dumps())
                             elif 100 < type < 1000:
                                 # 聊天消息
                                 self.broadcast_data(sock, message.dumps())
-                            else:
-                                # 其它消息
-                                pass
+                            elif type > 1000:
+                                # 系统消息
+                                if type == SYSTEM_MESSAGE.EXIT:
+                                    self.clearOpponent(sock, data)
+
                     except:
                         message = SystemMessage(addr[0], addr[1], ctime(), 2)
                         self.broadcast_data(sock, message.dumps())

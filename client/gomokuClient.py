@@ -51,6 +51,7 @@ class GomokuLogin(QtGui.QWidget, login.Ui_Dialog):
     def exit(self):
         self.close()
 
+
 class GomokuClient(QtGui.QWidget, chess.Ui_chessDialog):
     def __init__(self, addr, username, login_success_caller=None, login_failed_caller=None):
         QtGui.QWidget.__init__(self, None)
@@ -71,16 +72,30 @@ class GomokuClient(QtGui.QWidget, chess.Ui_chessDialog):
 
     def __init_ui(self):
         self.setupUi(self)
+        self.setWindowTitle(self.username)
+        self.setButtonStatus(True, False, False, False, True)
 
         self.connect(self.btnSend, SIGNAL('clicked()'), self.sendChatMessage)
         self.connect(self.btnStart, SIGNAL('clicked()'), self.startChess)
         self.connect(self.btnBackMove, SIGNAL('clicked()'), self.backMoveChess)
         self.connect(self.btnLeave, SIGNAL('clicked()'), self.leaveChess)
-        self.connect(self.btnDrawn, SIGNAL('clicked()'), self.drawnChess)
+        self.connect(self.btnAgain, SIGNAL('clicked()'), self.againChess)
         self.connect(self.btnLose, SIGNAL('clicked()'), self.loseChess)
 
-        self.connect(self.backthread, SIGNAL('chatReceived()'), self.receiveChatMessage)
-        self.connect(self.backthread, SIGNAL('systemReceived()'), self.systemMessage)
+        self.connect(self.backthread, SIGNAL('chatMsgReceived()'), self.handleChatMessage)
+        self.connect(self.backthread, SIGNAL('systemMsgReceived()'), self.handleSystemMessage)
+        self.connect(self.backthread, SIGNAL('chessWinMsgReceived()'), self.handleChessWinMessage)
+        self.connect(self.backthread, SIGNAL('chessLoseMsgReceived()'), self.handleChessLoseMessage)
+
+    def setButtonStatus(self, btnStartStatus, btnLoseStatus, btnAgainStatus, btnBackMoveStatus, btnLeaveStatus):
+        """
+        设置按钮状态
+        """
+        self.btnStart.setEnabled(btnStartStatus)
+        self.btnLose.setEnabled(btnLoseStatus)
+        self.btnAgain.setEnabled(btnAgainStatus)
+        self.btnBackMove.setEnabled(btnBackMoveStatus)
+        self.btnLeave.setEnabled(btnLeaveStatus)
 
     def startup(self):
         sock = socket(AF_INET, SOCK_STREAM)
@@ -97,21 +112,41 @@ class GomokuClient(QtGui.QWidget, chess.Ui_chessDialog):
         """
         开始对弈，随机选取棋子
         """
-        self.btnStart.setEnabled(False)
+        self.setButtonStatus(False, True, False, True, True)
         message = ChessMessage(CHESS_MESSAGE.START)
         self.client_sock.send(message.dumps())
 
-    def drawnChess(self):
-        pass
+    def againChess(self):
+        """
+        再来一局
+        """
+        self.setButtonStatus(False, True, False, True, True)
+        self.chessboard.restart()
+        message = ChessMessage(CHESS_MESSAGE.AGAIN)
+        self.client_sock.send(message.dumps())
 
     def loseChess(self):
-        pass
+        """
+        认输
+        """
+        self.setButtonStatus(False, False, True, False, True)
+        message = ChessMessage(CHESS_MESSAGE.LOSE, self.chesstype)
+        self.client_sock.send(message.dumps())
+        QtGui.QMessageBox.information(self, u"提示", u"你认输了")
 
     def backMoveChess(self):
-        pass
+        """
+        悔棋
+        """
+        self.chessboard.backmove()
 
     def leaveChess(self):
-        pass
+        """
+        离开房间
+        """
+        message = SystemMessage(SYSTEM_MESSAGE.EXIT, self.chesstype)
+        self.client_sock.send(message.dumps())
+        self.chesstype = NONE_FLAGS
 
     def sendChatMessage(self):
         # 得到用户输入的消息、输入时间
@@ -122,33 +157,69 @@ class GomokuClient(QtGui.QWidget, chess.Ui_chessDialog):
         self.client_sock.send(message.dumps())
         self.lineEdit.clear()
 
-    def receiveChatMessage(self):
+    def handleChatMessage(self):
         # 接收服务器的聊天消息
         self.textBrowser.append(self.backthread.message)
 
-    def systemMessage(self):
+    def handleChessWinMessage(self):
+        self.setButtonStatus(False, False, True, False, True)
+        whoWin = self.backthread.message.get_content()
+        if whoWin == WHITE_FLAGS:
+            QtGui.QMessageBox.information(self, u"恭喜", u"白棋赢了")
+        else:
+            QtGui.QMessageBox.information(self, u"恭喜", u"黑棋赢了")
+
+        # TODO: 积分
+
+    def handleChessLoseMessage(self):
+        self.setButtonStatus(False, False, True, False, True)
+        whoLose = self.backthread.message.get_content()
+        if whoLose == WHITE_FLAGS:
+             QtGui.QMessageBox.information(self, u"恭喜", u"白棋认输了")
+        else:
+            QtGui.QMessageBox.information(self, u"恭喜", u"黑棋认输了")
+
+    def handleSystemMessage(self):
         message = self.backthread.message
-        if message.get_content() == 1:
-            self.chesstype = 1
+        if message.get_content() == WHITE_FLAGS:
+            self.chesstype = WHITE_FLAGS  # 白棋
             self.widget1.setStyleSheet("background-image: url(:/background/white.png) no-repeat;")
             self.widget2.setStyleSheet("background-image: url(:/background/black.png) no-repeat;")
             self.leftFrame.setStyleSheet("background-image: url(:/background/avatar1.jpg);")
             self.rightFrame.setStyleSheet("background-image: url(:/background/avatar2.jpg);")
-        elif message.get_content() == 2:
-            self.chesstype = 2
+        elif message.get_content() == BLACK_FLAGS:
+            self.chesstype = BLACK_FLAGS  # 黑棋
             self.widget1.setStyleSheet("background-image: url(:/background/black.png) no-repeat;")
             self.widget2.setStyleSheet("background-image: url(:/background/white.png) no-repeat;")
             self.leftFrame.setStyleSheet("background-image: url(:/background/avatar2.jpg);")
             self.rightFrame.setStyleSheet("background-image: url(:/background/avatar1.jpg);")
 
-    def closeEvent(self, QCloseEvent):
+        self.chessboard.CHESS_TYPE = self.chesstype
+        self.chessboard.isstart = True
+        if self.chesstype == WHITE_FLAGS:
+            # 白棋先手
+            self.chessboard.isnext = True
+            self.chessboard.isend = False
 
-        self.client_sock.send()
+    def closeEvent(self, event):
+        """
+        退出房间时，发送消息给服务端，令其重置相关资源
+        """
+        message = SystemMessage(SYSTEM_MESSAGE.EXIT, self.chesstype)
+        self.client_sock.send(message.dumps())
+        self.chesstype = NONE_FLAGS
+
 
 class BackendThread(QtCore.QThread):
+
+    chessWinMsgReceived = QtCore.pyqtSignal()
+    chessLoseMsgReceived = QtCore.pyqtSignal()
     chessPressed = QtCore.pyqtSignal()
-    chatReceived = QtCore.pyqtSignal()
-    systemReceived = QtCore.pyqtSignal()
+    chatMsgReceived = QtCore.pyqtSignal()
+    systemMsgReceived = QtCore.pyqtSignal()
+    chessRegretMsgReceived = QtCore.pyqtSignal()
+    chessAgainMsgReceived = QtCore.pyqtSignal()
+
     def __init__(self, sock):
         super(BackendThread, self).__init__()
         self.sock = sock
@@ -169,22 +240,27 @@ class BackendThread(QtCore.QThread):
                     if type < 10:
                         print('receive chess message --> %s' % message.get_content())
                         self.message = message
-                        self.chessPressed.emit()
+                        if type == CHESS_MESSAGE.WIN:
+                            self.chessWinMsgReceived.emit()
+                        elif type == CHESS_MESSAGE.LOSE:
+                            self.chessLoseMsgReceived.emit()
+                        elif type == CHESS_MESSAGE.STEP:
+                            self.chessPressed.emit()
+                        elif type == CHESS_MESSAGE.REGRET:
+                            self.chessRegretMsgReceived.emit()
+                        elif type == CHESS_MESSAGE.AGAIN:
+                            self.chessAgainMsgReceived.emit()
                     elif 100 < type < 1000:
                         print('receive chat message --> %s' % message.get_content())
                         self.message = message.get_content()
-                        self.chatReceived.emit()
+                        self.chatMsgReceived.emit()
                     elif type == 1003:
                         print('receive system message --> %s' % message.get_content())
                         self.message = message
-                        self.systemReceived.emit()
-
+                        self.systemMsgReceived.emit()
 
 
 class ChessBoard(QtGui.QWidget):
-    NONE_FLAGS = 0      # 代表没有棋子
-    WHITE_FLAGS = 1     # 代表白棋
-    BLACK_FLAGS = 2     # 代表黑棋
 
     leftMargin = rightMargin = 21.0
     gridWidth = 0.0
@@ -203,14 +279,19 @@ class ChessBoard(QtGui.QWidget):
         self.gridWidth = (self.geometry().width() - 21 * 2) / 14
         self.halfGridWidth = self.gridWidth / 2
         self.limit = self.leftMargin + self.halfGridWidth
-        self.count = 0
         self.sock = sock
         self.thread = thread
+        self.isstart = False
+        self.isnext = False
+        self.isend = False
+        self.CHESS_TYPE = NONE_FLAGS
 
         # 初始化棋盘数组
-        self.list = [[(0, 0, self.NONE_FLAGS)] * 16 for i in range(16)]
+        self.list = [[(0, 0, NONE_FLAGS)] * 16 for i in range(16)]
 
         self.connect(self.thread, QtCore.SIGNAL("chessPressed()"), self.refreshBoard)
+        self.connect(self.thread, QtCore.SIGNAL('chessRegretMsgReceived()'), self.handleChessRegretMessage)
+        self.connect(self.thread, QtCore.SIGNAL("chessAgainMsgReceived()"), self.handleChessAgainMessage)
 
     def locateTo(self, x, y):
         """
@@ -233,13 +314,17 @@ class ChessBoard(QtGui.QWidget):
         """
         重新开始
         """
-        self.list = [[(0, 0, self.NONE_FLAGS)] * 16 for i in range(16)]
+        self.list = [[(0, 0, NONE_FLAGS)] * 16 for i in range(16)]
+        self.isend = False
+        if self.CHESS_TYPE == WHITE_FLAGS:
+            # 白棋先手
+            self.isnext = True
+            self.isstart = True
+        else:
+            self.isnext = False
+            self.isstart = False
 
-    def clear(self):
-        """
-        清空棋盘
-        """
-        del self.list[:]
+        self.update()
 
     def refreshBoard(self):
         message = self.thread.message
@@ -251,8 +336,30 @@ class ChessBoard(QtGui.QWidget):
         self.list[n][m] = (float(x), float(y), flag)
         self.update()
 
-    def updateList(self):
-        pass
+        self.isnext = True
+        self.isstart = True
+
+    def handleChessRegretMessage(self):
+        message = self.thread.message
+        n = message.get_content_by_key('n')
+        m = message.get_content_by_key('m')
+        x = message.get_content_by_key('x')
+        y = message.get_content_by_key('y')
+        self.list[n][m] = (float(x), float(y), NONE_FLAGS)
+        self.update()
+
+        self.isnext = False
+
+    def handleChessAgainMessage(self):
+        self.restart()
+
+    def backmove(self):
+        self.list[self.n][self.m] = (float(self.x), float(self.y), NONE_FLAGS)
+        self.update()
+        self.isnext = True
+
+        message = ChessMessage(self.n, self.m, self.x, self.y)
+        self.sock.send(message.dumps())
 
     def paintEvent(self, QPaintEvent):
         self.setAutoFillBackground(True)
@@ -266,12 +373,12 @@ class ChessBoard(QtGui.QWidget):
         for i in range(16):
             for j in range(16):
                 x, y, type = self.list[i][j]
-                if type == self.NONE_FLAGS:
+                if type == NONE_FLAGS:
                     continue
-                elif type == self.WHITE_FLAGS:
+                elif type == WHITE_FLAGS:
                     painter.drawPixmap(x - self.chessWidth / 2.0, y - self.chessHeight / 2.0, self.chessWidth,
                                        self.chessHeight, self.whiteChessImage)
-                elif type == self.BLACK_FLAGS:
+                elif type == BLACK_FLAGS:
                     painter.drawPixmap(x - self.chessWidth / 2.0, y - self.chessHeight / 2.0, self.chessWidth,
                                        self.chessHeight, self.blackChessImage)
 
@@ -280,22 +387,30 @@ class ChessBoard(QtGui.QWidget):
         判断鼠标左键点击
         """
         if QMouseEvent.button() == Qt.LeftButton:
+            if not self.isstart:
+                QtGui.QMessageBox.information(self, u"提示", u"对弈还未开始,白棋先手")
+                return
+
+            if not self.isnext:
+                QtGui.QMessageBox.information(self, u"提示", u"您的对手还未下，请等待")
+                return
+
             curX = QMouseEvent.x()
             curY = QMouseEvent.y()
-            self.count += 1
-            n, m, x, y = self.locateTo(curX, curY)
-            self.sock.send(ChessMessage(n, m, x, y, self.WHITE_FLAGS).dumps())
-            if self.count % 2 == 0:
-                self.list[n][m] = (float(x), float(y), self.WHITE_FLAGS)
-                result = self.isWin(self.list, n, m, self.WHITE_FLAGS)
-            else:
-                self.list[n][m] = (float(x), float(y), self.BLACK_FLAGS)
-                result = self.isWin(self.list, n, m, self.BLACK_FLAGS)
+            self.n, self.m, self.x, self.y = self.locateTo(curX, curY)
+            if self.list[self.n][self.m][2] != NONE_FLAGS:
+                return
+            self.list[self.n][self.m] = (float(self.x), float(self.y), self.CHESS_TYPE)
+            self.isnext = False
             self.update()
 
-            #result = self.isWin(self.list, n, m, 1)
+            self.sock.send(ChessMessage(self.n, self.m, self.x, self.y, self.CHESS_TYPE).dumps())
+
+            result = self.isWin(self.list, self.n, self.m, self.CHESS_TYPE)
+
             if result:
-                print("win")
+                self.sock.send(ChessMessage(CHESS_MESSAGE.WIN, self.CHESS_TYPE).dumps())
+                QtGui.QMessageBox.information(self, u"恭喜", "You win")
 
     def isWin(self, list, x, y, chesstype):
         """
