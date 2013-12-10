@@ -67,6 +67,9 @@
    <property name="styleSheet">
     <string notr="true">background-color: rgb(255, 255, 255);</string>
    </property>
+   <property name="text">
+    <string>127.0.0.1</string>
+   </property>
   </widget>
   <widget class="QLineEdit" name="lineEditPort">
    <property name="geometry">
@@ -79,6 +82,9 @@
    </property>
    <property name="styleSheet">
     <string notr="true">background-color: rgb(255, 255, 255);</string>
+   </property>
+   <property name="text">
+    <string>21567</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEditUsername">

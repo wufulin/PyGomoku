@@ -16,17 +16,17 @@
   <property name="styleSheet">
    <string notr="true">background-color: rgb(255, 227, 175);</string>
   </property>
-  <widget class="QFrame" name="frame">
+  <widget class="QFrame" name="leftFrame">
    <property name="geometry">
     <rect>
      <x>40</x>
      <y>40</y>
      <width>140</width>
-     <height>221</height>
+     <height>140</height>
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(236, 196, 140);</string>
+    <string notr="true">background-image: url(:/background/avatar1.jpg);</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -35,17 +35,17 @@
     <enum>QFrame::Raised</enum>
    </property>
   </widget>
-  <widget class="QFrame" name="frame_2">
+  <widget class="QFrame" name="rightFrame">
    <property name="geometry">
     <rect>
      <x>730</x>
      <y>40</y>
      <width>140</width>
-     <height>221</height>
+     <height>140</height>
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(236, 196, 140);</string>
+    <string notr="true">background-image: url(:/background/avatar2.jpg);</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -67,7 +67,7 @@
     <string notr="true">background-color: rgb(255, 255, 255);</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btSend">
+  <widget class="QPushButton" name="btnSend">
    <property name="geometry">
     <rect>
      <x>835</x>
@@ -148,6 +148,58 @@
      <string>离开</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QLabel" name="lblYou">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>200</y>
+     <width>62</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>You</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblOpponent">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>200</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Opponent</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QWidget" name="widget1" native="true">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>220</y>
+     <width>29</width>
+     <height>29</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="widget2" native="true">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>220</y>
+     <width>29</width>
+     <height>29</height>
+    </rect>
+   </property>
   </widget>
  </widget>
  <resources>

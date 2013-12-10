@@ -15,6 +15,9 @@ class GomokuServer(object):
         self.addr = addr
         self.server_sock = None
         self.connection_list = []
+        self.opponent_list = []
+        self.white_opponent = False
+        self.black_opponent = False
 
     def startup(self):
         self.shutdown()
@@ -58,7 +61,27 @@ class GomokuServer(object):
             if socket != self.server_sock and socket != sock:
                 try:
                     socket.send(message)
-                except:
+                except Exception, e:
+                    print(str(e))
+                    socket.close()
+                    self.connection_list.remove(socket)
+
+    def set_opponent(self, sock):
+        # 设置对手
+        for socket in self.connection_list:
+            if socket == sock:
+                try:
+                    if not self.white_opponent:
+                        self.white_opponent = True
+                        msg = SystemMessage(SYSTEM_MESSAGE.OPPONENT, 1)
+                    elif not self.black_opponent:
+                        self.black_opponent = True
+                        msg = SystemMessage(SYSTEM_MESSAGE.OPPONENT, 2)
+                    socket.send(msg.dumps())
+                except Exception, e:
+                    print(str(e))
+                    self.white_opponent = False
+                    self.black_opponent = False
                     socket.close()
                     self.connection_list.remove(socket)
 
@@ -72,7 +95,8 @@ class GomokuServer(object):
                     client, addr = self.server_sock.accept()
                     # TODO: 限制对弈人数
                     self.connection_list.append(client)
-                    self.broadcast_data(client, "[%s:%s] entered room at %s\n" % (addr[0], addr[1], ctime()))
+                    message = SystemMessage(addr[0], addr[1], ctime(), 1)
+                    self.broadcast_data(client, message.dumps())
                 # 从客户端发来的新消息
                 else:
                     # 接收消息，并分类处理
@@ -82,16 +106,19 @@ class GomokuServer(object):
                         if data:
                             if type < 10:
                                 # 棋子消息
-                                print(data)
-                                self.broadcast_data(sock, data)
+                                if type == CHESS_MESSAGE.START:
+                                    self.set_opponent(sock)
+                                elif type == CHESS_MESSAGE.STEP:
+                                    self.broadcast_data(sock, message.dumps())
                             elif 100 < type < 1000:
                                 # 聊天消息
-                                self.broadcast_data(sock, data)
+                                self.broadcast_data(sock, message.dumps())
                             else:
+                                # 其它消息
                                 pass
                     except:
-                        self.broadcast_data(sock, "Client (%s, %s) is offline" % addr)
-                        print "Client (%s, %s) is offline" % addr
+                        message = SystemMessage(addr[0], addr[1], ctime(), 2)
+                        self.broadcast_data(sock, message.dumps())
                         sock.close()
                         self.connection_list.remove(sock)
                         continue

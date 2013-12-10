@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/chess.ui'
+# Form implementation generated from reading ui file 'chess.ui'
 #
-# Created: Thu Dec  5 21:22:05 2013
+# Created: Tue Dec 10 11:20:44 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -28,26 +28,26 @@ class Ui_chessDialog(object):
         chessDialog.setObjectName(_fromUtf8("chessDialog"))
         chessDialog.resize(904, 534)
         chessDialog.setStyleSheet(_fromUtf8("background-color: rgb(255, 227, 175);"))
-        self.frame = QtGui.QFrame(chessDialog)
-        self.frame.setGeometry(QtCore.QRect(40, 40, 140, 221))
-        self.frame.setStyleSheet(_fromUtf8("background-color: rgb(236, 196, 140);"))
-        self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtGui.QFrame.Raised)
-        self.frame.setObjectName(_fromUtf8("frame"))
-        self.frame_2 = QtGui.QFrame(chessDialog)
-        self.frame_2.setGeometry(QtCore.QRect(730, 40, 140, 221))
-        self.frame_2.setStyleSheet(_fromUtf8("background-color: rgb(236, 196, 140);"))
-        self.frame_2.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.frame_2.setFrameShadow(QtGui.QFrame.Raised)
-        self.frame_2.setObjectName(_fromUtf8("frame_2"))
+        self.leftFrame = QtGui.QFrame(chessDialog)
+        self.leftFrame.setGeometry(QtCore.QRect(40, 40, 140, 140))
+        self.leftFrame.setStyleSheet(_fromUtf8("background-image: url(:/background/avatar1.jpg);"))
+        self.leftFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.leftFrame.setFrameShadow(QtGui.QFrame.Raised)
+        self.leftFrame.setObjectName(_fromUtf8("leftFrame"))
+        self.rightFrame = QtGui.QFrame(chessDialog)
+        self.rightFrame.setGeometry(QtCore.QRect(730, 40, 140, 140))
+        self.rightFrame.setStyleSheet(_fromUtf8("background-image: url(:/background/avatar2.jpg);"))
+        self.rightFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.rightFrame.setFrameShadow(QtGui.QFrame.Raised)
+        self.rightFrame.setObjectName(_fromUtf8("rightFrame"))
         self.lineEdit = QtGui.QLineEdit(chessDialog)
         self.lineEdit.setGeometry(QtCore.QRect(720, 485, 111, 22))
         self.lineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
         self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
-        self.btSend = QtGui.QPushButton(chessDialog)
-        self.btSend.setGeometry(QtCore.QRect(835, 485, 51, 21))
-        self.btSend.setStyleSheet(_fromUtf8("background-color: rgb(224, 147, 62);"))
-        self.btSend.setObjectName(_fromUtf8("btSend"))
+        self.btnSend = QtGui.QPushButton(chessDialog)
+        self.btnSend.setGeometry(QtCore.QRect(835, 485, 51, 21))
+        self.btnSend.setStyleSheet(_fromUtf8("background-color: rgb(224, 147, 62);"))
+        self.btnSend.setObjectName(_fromUtf8("btnSend"))
         self.textBrowser = QtGui.QTextBrowser(chessDialog)
         self.textBrowser.setGeometry(QtCore.QRect(720, 290, 161, 181))
         self.textBrowser.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
@@ -71,17 +71,33 @@ class Ui_chessDialog(object):
         self.btnLeave = QtGui.QPushButton(self.splitter)
         self.btnLeave.setStyleSheet(_fromUtf8("background-color: rgb(224, 147, 62);"))
         self.btnLeave.setObjectName(_fromUtf8("btnLeave"))
+        self.lblYou = QtGui.QLabel(chessDialog)
+        self.lblYou.setGeometry(QtCore.QRect(80, 200, 62, 16))
+        self.lblYou.setAlignment(QtCore.Qt.AlignCenter)
+        self.lblYou.setObjectName(_fromUtf8("lblYou"))
+        self.lblOpponent = QtGui.QLabel(chessDialog)
+        self.lblOpponent.setGeometry(QtCore.QRect(770, 200, 71, 16))
+        self.lblOpponent.setAlignment(QtCore.Qt.AlignCenter)
+        self.lblOpponent.setObjectName(_fromUtf8("lblOpponent"))
+        self.widget1 = QtGui.QWidget(chessDialog)
+        self.widget1.setGeometry(QtCore.QRect(100, 220, 29, 29))
+        self.widget1.setObjectName(_fromUtf8("widget1"))
+        self.widget2 = QtGui.QWidget(chessDialog)
+        self.widget2.setGeometry(QtCore.QRect(790, 220, 29, 29))
+        self.widget2.setObjectName(_fromUtf8("widget2"))
 
         self.retranslateUi(chessDialog)
         QtCore.QMetaObject.connectSlotsByName(chessDialog)
 
     def retranslateUi(self, chessDialog):
         chessDialog.setWindowTitle(_translate("chessDialog", "Dialog", None))
-        self.btSend.setText(_translate("chessDialog", "发送", None))
+        self.btnSend.setText(_translate("chessDialog", "发送", None))
         self.btnStart.setText(_translate("chessDialog", "开始", None))
         self.btnLose.setText(_translate("chessDialog", "认输", None))
         self.btnDrawn.setText(_translate("chessDialog", "和棋", None))
         self.btnBackMove.setText(_translate("chessDialog", "悔棋", None))
         self.btnLeave.setText(_translate("chessDialog", "离开", None))
+        self.lblYou.setText(_translate("chessDialog", "You", None))
+        self.lblOpponent.setText(_translate("chessDialog", "Opponent", None))
 
 import assets_rc

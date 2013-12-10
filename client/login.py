@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/login.ui'
+# Form implementation generated from reading ui file 'login.ui'
 #
-# Created: Thu Dec  5 11:08:03 2013
+# Created: Mon Dec  9 18:04:14 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -66,6 +66,8 @@ class Ui_Dialog(object):
         self.label.setText(_translate("Dialog", "服务器：", None))
         self.label_2.setText(_translate("Dialog", "端口：", None))
         self.label_3.setText(_translate("Dialog", "用户名：", None))
+        self.lineEditServer.setText(_translate("Dialog", "127.0.0.1", None))
+        self.lineEditPort.setText(_translate("Dialog", "21567", None))
         self.btnLogin.setText(_translate("Dialog", "登录", None))
         self.btnExit.setText(_translate("Dialog", "退出", None))
 

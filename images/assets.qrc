@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="background">
+    <file>avatar1.jpg</file>
+    <file>avatar2.jpg</file>
     <file>black.png</file>
     <file>white.png</file>
     <file>chessboard.png</file>
