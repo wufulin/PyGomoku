@@ -49,6 +49,9 @@ class BaseMessage(object):
         self.type = message_type
         self.dict = {"type": self.type}
 
+    def __str__(self):
+        return self.dumps()
+
     def dumps(self):
         """
         转换成Json格式

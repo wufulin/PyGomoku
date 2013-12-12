@@ -14,9 +14,9 @@ from PyQt4.Qt import *
 import chess
 import login
 import game
-from util.config import *
-from util.message import *
-from util.tools import *
+from common.config import *
+from common.message import *
+from common.tools import *
 
 
 class GomokuLogin(QtGui.QWidget, login.Ui_Dialog):

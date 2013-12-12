@@ -6,11 +6,15 @@ __author__ = 'wufulin'
 import select
 from socket import *
 from time import ctime
-from util.config import *
-from util.message import *
+from common.config import *
+from common.message import *
+from service.handler import *
 
 
 class GomokuServer(object):
+
+    logger = tools.get_logger('server')
+
     def __init__(self, addr=None):
         self.addr = addr
         self.server_sock = None
@@ -18,6 +22,15 @@ class GomokuServer(object):
         self.opponent_list = []
         self.white_opponent = False
         self.black_opponent = False
+
+    def _init_handlers(self):
+        chesshandler = ChessMessageHandler()
+        chathandler = ChatMessageHandler()
+        systemhandler = SystemMessageHandler()
+
+        chesshandler.next(chathandler)
+        chathandler.next(systemhandler)
+        self.handlers = chesshandler
 
     def startup(self):
         self.shutdown()
@@ -34,6 +47,7 @@ class GomokuServer(object):
         self.server_sock.listen(65536)
         self.server_sock.setblocking(False)
         self.connection_list.append(self.server_sock)
+        self._init_handlers()
         return True
 
     def shutdown(self):
@@ -97,55 +111,61 @@ class GomokuServer(object):
                 self.connection_list.remove(socket)
 
     def run(self):
-        while True:
-            read_sockets, write_sockets, error_sockets = select.select(self.connection_list, [], [])
+        try:
+            while True:
+                read_sockets, write_sockets, error_sockets = select.select(self.connection_list, [], [])
 
-            for sock in read_sockets:
-                # 新加入者
-                if sock == self.server_sock:
-                    client, addr = self.server_sock.accept()
-                    # TODO: 限制对弈人数
-                    self.connection_list.append(client)
-                    message = SystemMessage(addr[0], addr[1], ctime(), 1)
-                    self.broadcast_data(client, message.dumps())
-                # 从客户端发来的新消息
-                else:
-                    # 接收消息，并分类处理
-                    try:
-                        message = BaseMessage()
-                        type, data = message.loads(sock.recv(BUFSIZE))
-                        if data:
-                            if type < 10:
-                                # 棋子消息
-                                if type == CHESS_MESSAGE.START:
-                                    self.setOpponent(sock)
-                                elif type == CHESS_MESSAGE.STEP:
-                                    self.broadcast_data(sock, message.dumps())
-                                elif type == CHESS_MESSAGE.WIN:
-                                    self.broadcast_data(sock, message.dumps())
-                                elif type == CHESS_MESSAGE.LOSE:
-                                    self.broadcast_data(sock, message.dumps())
-                                elif type == CHESS_MESSAGE.REGRET:
-                                    self.broadcast_data(sock, message.dumps())
-                                elif type == CHESS_MESSAGE.AGAIN:
-                                    self.broadcast_data(sock, message.dumps())
-                            elif 100 < type < 1000:
-                                # 聊天消息
-                                self.broadcast_data(sock, message.dumps())
-                            elif type > 1000:
-                                # 系统消息
-                                if type == SYSTEM_MESSAGE.EXIT:
-                                    self.clearOpponent(sock, data)
+                for sock in read_sockets:
+                    # 新加入者
+                    if sock == self.server_sock:
+                        client, addr = self.server_sock.accept()
+                        # TODO: 限制对弈人数
+                        self.connection_list.append(client)
+                        message = SystemMessage(addr[0], addr[1], ctime(), 1)
+                        self.broadcast_data(client, message.dumps())
+                    # 从客户端发来的新消息
+                    else:
+                        # 接收消息，并分类处理
+                        try:
+                            message = BaseMessage()
+                            type, data = message.loads(sock.recv(BUFSIZE))
+                            if data:
+                                self.handlers.handle(message)
+                                # if type < 10:
+                                #     # 棋子消息
+                                #     if type == CHESS_MESSAGE.START:
+                                #         self.setOpponent(sock)
+                                #     elif type == CHESS_MESSAGE.STEP:
+                                #         self.broadcast_data(sock, message.dumps())
+                                #     elif type == CHESS_MESSAGE.WIN:
+                                #         self.broadcast_data(sock, message.dumps())
+                                #     elif type == CHESS_MESSAGE.LOSE:
+                                #         self.broadcast_data(sock, message.dumps())
+                                #     elif type == CHESS_MESSAGE.REGRET:
+                                #         self.broadcast_data(sock, message.dumps())
+                                #     elif type == CHESS_MESSAGE.AGAIN:
+                                #         self.broadcast_data(sock, message.dumps())
+                                # elif 100 < type < 1000:
+                                #     # 聊天消息
+                                #     self.broadcast_data(sock, message.dumps())
+                                # elif type > 1000:
+                                #     # 系统消息
+                                #     if type == SYSTEM_MESSAGE.EXIT:
+                                #         self.clearOpponent(sock, data)
 
-                    except:
-                        message = SystemMessage(addr[0], addr[1], ctime(), 2)
-                        self.broadcast_data(sock, message.dumps())
-                        sock.close()
-                        self.connection_list.remove(sock)
-                        continue
+                        except:
+                            message = SystemMessage(addr[0], addr[1], ctime(), 2)
+                            self.broadcast_data(sock, message.dumps())
+                            sock.close()
+                            self.connection_list.remove(sock)
+                            continue
 
-            for sock in write_sockets:
-                pass
+                for sock in write_sockets:
+                    pass
+        except KeyboardInterrupt:
+            self.logger.debug('server shutdown now because keyboard interrupt')
+        finally:
+            self.shutdown()
 
 
 if __name__ == '__main__':
