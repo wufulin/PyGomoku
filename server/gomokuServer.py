@@ -130,28 +130,28 @@ class GomokuServer(object):
                             message = BaseMessage()
                             type, data = message.loads(sock.recv(BUFSIZE))
                             if data:
-                                self.handlers.handle(message)
-                                # if type < 10:
-                                #     # 棋子消息
-                                #     if type == CHESS_MESSAGE.START:
-                                #         self.setOpponent(sock)
-                                #     elif type == CHESS_MESSAGE.STEP:
-                                #         self.broadcast_data(sock, message.dumps())
-                                #     elif type == CHESS_MESSAGE.WIN:
-                                #         self.broadcast_data(sock, message.dumps())
-                                #     elif type == CHESS_MESSAGE.LOSE:
-                                #         self.broadcast_data(sock, message.dumps())
-                                #     elif type == CHESS_MESSAGE.REGRET:
-                                #         self.broadcast_data(sock, message.dumps())
-                                #     elif type == CHESS_MESSAGE.AGAIN:
-                                #         self.broadcast_data(sock, message.dumps())
-                                # elif 100 < type < 1000:
-                                #     # 聊天消息
-                                #     self.broadcast_data(sock, message.dumps())
-                                # elif type > 1000:
-                                #     # 系统消息
-                                #     if type == SYSTEM_MESSAGE.EXIT:
-                                #         self.clearOpponent(sock, data)
+                                # self.handlers.handle(message)
+                                if type < 10:
+                                    # 棋子消息
+                                    if type == CHESS_MESSAGE.START:
+                                        self.setOpponent(sock)
+                                    elif type == CHESS_MESSAGE.STEP:
+                                        self.broadcast_data(sock, message.dumps())
+                                    elif type == CHESS_MESSAGE.WIN:
+                                        self.broadcast_data(sock, message.dumps())
+                                    elif type == CHESS_MESSAGE.LOSE:
+                                        self.broadcast_data(sock, message.dumps())
+                                    elif type == CHESS_MESSAGE.REGRET:
+                                        self.broadcast_data(sock, message.dumps())
+                                    elif type == CHESS_MESSAGE.AGAIN:
+                                        self.broadcast_data(sock, message.dumps())
+                                elif 100 < type < 1000:
+                                    # 聊天消息
+                                    self.broadcast_data(sock, message.dumps())
+                                elif type > 1000:
+                                    # 系统消息
+                                    if type == SYSTEM_MESSAGE.EXIT:
+                                        self.clearOpponent(sock, data)
 
                         except:
                             message = SystemMessage(addr[0], addr[1], ctime(), 2)
