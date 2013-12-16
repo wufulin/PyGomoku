@@ -33,8 +33,9 @@ CHAT_MESSAGE = enum(
 SYSTEM_MESSAGE = enum(
     LOGIN=1001,
     LOGOUT=1002,
-    OPPONENT=1003,
-    LEAVE=1004
+    VERIFIED_PASS=1003,
+    VERIFIED_FAIL=1004,
+    LEAVE=1005
 )
 
 
@@ -242,19 +243,35 @@ class SystemMessage(object):
         return instance
 
     @classmethod
-    def create_login(cls, username, ip, port, time):
+    def create_login(cls, user):
         instance = cls.__new__(cls)
         instance.type = SYSTEM_MESSAGE.LOGIN
         instance.descriptor = "用户登录消息"
-        instance.content = '%s [%s:%s] login at %s' % (username, ip, port, time)
+        instance.content = user.dumps()
         return instance
 
     @classmethod
-    def create_logout(cls, username, ip, port, time):
+    def create_logout(cls, user):
         instance = cls.__new__(cls)
         instance.type = SYSTEM_MESSAGE.LOGOUT
         instance.descriptor = "用户注销消息"
-        instance.content = '%s [%s:%s] logout at %s' % (username, ip, port, time)
+        instance.content = user.dumps()
+        return instance
+
+    @classmethod
+    def create_verified_pass(cls, user):
+        instance = cls.__new__(cls)
+        instance.type = SYSTEM_MESSAGE.VERIFIED_PASS
+        instance.descriptor = "用户验证成功消息"
+        instance.content = user.dumps()
+        return instance
+
+    @classmethod
+    def create_verified_failed(cls, content):
+        instance = cls.__new__(cls)
+        instance.type = SYSTEM_MESSAGE.VERIFIED_FAIL
+        instance.descriptor = "用户验证失败消息"
+        instance.content = content
         return instance
 
     @classmethod
@@ -264,8 +281,3 @@ class SystemMessage(object):
         instance.descriptor = "用户退出房间消息"
         instance.content = '%s leave %d room at %s' % (username, room, time)
         return instance
-
-    def __init_opponent(self, *args):
-        # 初始化棋子分配消息
-        super(SystemMessage, self).__init__(args[0])
-        self.dict['content'] = args[1]

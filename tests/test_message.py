@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from entity.user import User
 
 __author__ = "wufulin"
 
@@ -29,6 +30,13 @@ class TestMessage(unittest.TestCase):
         s = ChatMessage.create_room_msg('wufulin', "2012-02-10 10:30:15", "enter room")
         print(s.dumps())
 
+    def test_sys_login_msg(self):
+        user = User('wufulin', '123456')
+        s = SystemMessage.create_login(user)
+        print(s.dumps())
+
+        obj = SystemMessage.loads(s.dumps())
+        self.assertEqual(obj.gettype(), 1001)
 
 if __name__ == "__main__":
     unittest.main()

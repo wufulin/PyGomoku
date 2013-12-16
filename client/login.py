@@ -1,73 +1,75 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
+from entity.user import User
 
-# Form implementation generated from reading ui file 'login.ui'
-#
-# Created: Mon Dec  9 18:04:14 2013
-#      by: PyQt4 UI code generator 4.10.3
-#
-# WARNING! All changes made in this file will be lost!
+__author__ = 'wufulin'
 
-from PyQt4 import QtCore, QtGui
+import loginUI
+from socket import *
+from PyQt4.QtCore import SIGNAL
+from PyQt4 import QtGui
+from common.tools import get_logger
+from service.userservice import UserService
+import backthread
+from main import GomokuMain
 
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
 
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+class GomokuLogin(QtGui.QWidget, loginUI.Ui_Dialog):
 
-class Ui_Dialog(object):
-    def setupUi(self, Dialog):
-        Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(335, 152)
-        Dialog.setStyleSheet(_fromUtf8("background-color: rgb(255, 227, 175);"))
-        self.label = QtGui.QLabel(Dialog)
-        self.label.setGeometry(QtCore.QRect(30, 20, 62, 16))
-        self.label.setObjectName(_fromUtf8("label"))
-        self.label_2 = QtGui.QLabel(Dialog)
-        self.label_2.setGeometry(QtCore.QRect(30, 50, 62, 16))
-        self.label_2.setObjectName(_fromUtf8("label_2"))
-        self.label_3 = QtGui.QLabel(Dialog)
-        self.label_3.setGeometry(QtCore.QRect(30, 80, 62, 16))
-        self.label_3.setObjectName(_fromUtf8("label_3"))
-        self.lineEditServer = QtGui.QLineEdit(Dialog)
-        self.lineEditServer.setGeometry(QtCore.QRect(90, 20, 211, 22))
-        self.lineEditServer.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.lineEditServer.setObjectName(_fromUtf8("lineEditServer"))
-        self.lineEditPort = QtGui.QLineEdit(Dialog)
-        self.lineEditPort.setGeometry(QtCore.QRect(90, 50, 211, 22))
-        self.lineEditPort.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.lineEditPort.setObjectName(_fromUtf8("lineEditPort"))
-        self.lineEditUsername = QtGui.QLineEdit(Dialog)
-        self.lineEditUsername.setGeometry(QtCore.QRect(90, 80, 211, 22))
-        self.lineEditUsername.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.lineEditUsername.setObjectName(_fromUtf8("lineEditUsername"))
-        self.btnLogin = QtGui.QPushButton(Dialog)
-        self.btnLogin.setGeometry(QtCore.QRect(140, 110, 71, 32))
-        self.btnLogin.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.btnLogin.setObjectName(_fromUtf8("btnLogin"))
-        self.btnExit = QtGui.QPushButton(Dialog)
-        self.btnExit.setGeometry(QtCore.QRect(230, 110, 71, 32))
-        self.btnExit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.btnExit.setObjectName(_fromUtf8("btnExit"))
+    def __init__(self, parent=None):
+        self.logger = get_logger('GomokuLogin')
+        QtGui.QWidget.__init__(self, parent)
+        self.setupUi(self)
+        self.connect(self.btnLogin, SIGNAL('clicked()'), self.login)
+        self.connect(self.btnExit, SIGNAL('clicked()'), self.exit)
 
-        self.retranslateUi(Dialog)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
+    def login(self):
+        ip = str(self.lineEditServer.text()).strip()
+        port = int(self.lineEditPort.text())
+        username = str(self.lineEditUsername.text()).strip().decode('utf-8')
+        password = str(self.lineEditPassword.text()).strip().decode('utf-8')
 
-    def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
-        self.label.setText(_translate("Dialog", "服务器：", None))
-        self.label_2.setText(_translate("Dialog", "端口：", None))
-        self.label_3.setText(_translate("Dialog", "用户名：", None))
-        self.lineEditServer.setText(_translate("Dialog", "127.0.0.1", None))
-        self.lineEditPort.setText(_translate("Dialog", "21567", None))
-        self.btnLogin.setText(_translate("Dialog", "登录", None))
-        self.btnExit.setText(_translate("Dialog", "退出", None))
+        self.sock = socket(AF_INET, SOCK_STREAM)
+        try:
+            self.sock.connect((ip, port))
+            self.logger.debug('connect to remote server successfully!')
+            self.thread = backthread.BackThread(self.sock)
+            self.thread.start()
+            self.connect(self.thread, SIGNAL('login_success_signal(QString)'), self.login_success)
+            self.connect(self.thread, SIGNAL('login_failed_signal(QString)'), self.login_failed)
+            service = UserService(self.thread)
+            service.verifyUser(username, password)
+        except Exception, e:
+            self.logger.error(str(e))
+            QtGui.QMessageBox.information(self, "错误", "unable to connect server because {0}".format(str(e)))
 
+    def login_success(self, msg):
+        """
+        登录成功回调函数
+        """
+        self.close()
+        self.logger.debug(msg)
+        user = User.loads(str(msg))
+        self.hall = GomokuMain(self.sock, user)
+        self.hall.show()
+
+    def login_failed(self, error):
+        """
+        登录失败回调函数
+        """
+        self.logger.debug("login error --> {0}".format(str(error)))
+        QtGui.QMessageBox.information(self, "错误", "%s" % str(error))
+        self.thread.shutdown()
+
+    def exit(self):
+        self.logger.debug("close client now")
+        self.thread.shutdown()
+        self.close()
+
+if __name__ == '__main__':
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    app.setApplicationName("Gomoku")
+    loginForm = GomokuLogin()
+    loginForm.show()
+    sys.exit(app.exec_())

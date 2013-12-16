@@ -3,8 +3,7 @@
 
 __author__ = 'wufulin'
 
-import sqlite3
-
+import pool
 
 class MyDB(object):
     DB_FILE = "gomoku.db3"
@@ -12,6 +11,7 @@ class MyDB(object):
         create table user (
             id integer primary key autoincrement,
             username varchar(20),
+            password varchar(20),
             win integer,
             lose integer,
             score integer
@@ -19,53 +19,57 @@ class MyDB(object):
     '''
 
     def __init__(self, file=DB_FILE):
-        self.con = sqlite3.connect(file)
+        self.pool = pool.DBPool(4, file, 'sqlite3')
 
     def create_table(self, sql):
-        cur = self.con.cursor()
+        con = self.pool.get_connection()
+        cur = con.cursor()
         cur.execute(sql)
         cur.close()
-        self.con.commit()
+        con.commit()
+        self.pool.return_connection(con)
 
     def drop_table(self, tablename):
-        cur = self.con.cursor()
+        con = self.pool.get_connection()
+        cur = con.cursor()
         cur.execute('drop table ' + tablename)
         cur.close()
-        self.con.commit()
+        con.commit()
+        self.pool.return_connection(con)
 
     def queryone(self, sql, *args):
-        cur = self.con.cursor()
+        con = self.pool.get_connection()
+        cur = con.cursor()
         cur.execute(sql, args)
         result = cur.fetchone()
         cur.close()
+        self.pool.return_connection(con)
         return result
 
     def queryall(self, sql, *args):
-        cur = self.con.cursor()
+        con = self.pool.get_connection()
+        cur = con.cursor()
         cur.execute(sql, args)
         result = cur.fetchall()
         cur.close()
+        self.pool.return_connection(con)
         return result
 
-    def insert(self, sql, *args):
-        cur = self.con.cursor()
+    def insert_or_update(self, sql, *args):
+        con = self.pool.get_connection()
+        cur = con.cursor()
         cur.execute(sql, args)
         cur.close()
-        self.con.commit()
-
-    def update(self, sql, *args):
-        cur = self.con.cursor()
-        cur.execute(sql, args)
-        cur.close()
-        self.con.commit()
+        con.commit()
+        self.pool.return_connection(con)
 
     def close(self):
-        self.con.close()
+        self.pool.close()
 
 
 if __name__ == '__main__':
     db = MyDB()
     # db.create_table(db.CREATE_TABLE)
-    # db.insert("insert into user(username, win, lose, score) values (?, ?, ?, ?)", 'wufulin', 10, 2, 20)
-    result = db.queryall(r'select * from user')
-    print(result)
+    db.insert_or_update("insert into user(username, password, win, lose, score)\
+    values (?, ?, ?, ?, ?)", 'wufulin', '123456', 10, 2, 20)
+    db.close()

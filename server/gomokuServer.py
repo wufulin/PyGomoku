@@ -4,29 +4,29 @@
 __author__ = 'wufulin'
 
 import select
+import Queue
 from socket import *
-from time import ctime
 from common.config import *
-from common.message import *
 from service.handler import *
+from common.tools import get_logger
 
 
 class GomokuServer(object):
-
-    logger = tools.get_logger('server')
+    logger = get_logger('server')
 
     def __init__(self, addr=None):
         self.addr = addr
         self.server_sock = None
+        self.sendqueue = Queue.Queue()
         self.connection_list = []
         self.opponent_list = []
         self.white_opponent = False
         self.black_opponent = False
 
     def _init_handlers(self):
-        chesshandler = ChessMessageHandler()
-        chathandler = ChatMessageHandler()
-        systemhandler = SystemMessageHandler()
+        chesshandler = ChessMessageHandler(self.sendqueue)
+        chathandler = ChatMessageHandler(self.sendqueue)
+        systemhandler = SystemMessageHandler(self.sendqueue)
 
         chesshandler.next(chathandler)
         chathandler.next(systemhandler)
@@ -113,55 +113,35 @@ class GomokuServer(object):
     def run(self):
         try:
             while True:
-                read_sockets, write_sockets, error_sockets = select.select(self.connection_list, [], [])
+                read_sockets, write_sockets, error_sockets = select.select(self.connection_list, self.connection_list,
+                                                                           self.connection_list)
+
+                for sock in error_sockets:
+                    self.connection_list.remove(sock)
+                    sock.close()
 
                 for sock in read_sockets:
-                    # 新加入者
                     if sock == self.server_sock:
                         client, addr = self.server_sock.accept()
-                        # TODO: 限制对弈人数
                         self.connection_list.append(client)
-                        message = SystemMessage(addr[0], addr[1], ctime(), 1)
-                        self.broadcast_data(client, message.dumps())
-                    # 从客户端发来的新消息
+                        self.logger.debug("[%s:%s] connected" % (addr[0], addr[1]))
                     else:
-                        # 接收消息，并分类处理
                         try:
-                            message = BaseMessage()
-                            type, data = message.loads(sock.recv(BUFSIZE))
-                            if data:
-                                # self.handlers.handle(message)
-                                if type < 10:
-                                    # 棋子消息
-                                    if type == CHESS_MESSAGE.START:
-                                        self.setOpponent(sock)
-                                    elif type == CHESS_MESSAGE.STEP:
-                                        self.broadcast_data(sock, message.dumps())
-                                    elif type == CHESS_MESSAGE.WIN:
-                                        self.broadcast_data(sock, message.dumps())
-                                    elif type == CHESS_MESSAGE.LOSE:
-                                        self.broadcast_data(sock, message.dumps())
-                                    elif type == CHESS_MESSAGE.REGRET:
-                                        self.broadcast_data(sock, message.dumps())
-                                    elif type == CHESS_MESSAGE.AGAIN:
-                                        self.broadcast_data(sock, message.dumps())
-                                elif 100 < type < 1000:
-                                    # 聊天消息
-                                    self.broadcast_data(sock, message.dumps())
-                                elif type > 1000:
-                                    # 系统消息
-                                    if type == SYSTEM_MESSAGE.EXIT:
-                                        self.clearOpponent(sock, data)
-
+                            data = sock.recv(BUFSIZE)
+                            if data != "":
+                                message = json.loads(data, encoding='utf-8')
+                                self.handlers.handle(message)
                         except:
-                            message = SystemMessage(addr[0], addr[1], ctime(), 2)
-                            self.broadcast_data(sock, message.dumps())
-                            sock.close()
                             self.connection_list.remove(sock)
+                            sock.close()
                             continue
 
                 for sock in write_sockets:
-                    pass
+                    if sock != self.server_sock:
+                        if self.sendqueue.qsize() > 0:
+                            sock.send(self.sendqueue.get())
+
+
         except KeyboardInterrupt:
             self.logger.debug('server shutdown now because keyboard interrupt')
         finally:
