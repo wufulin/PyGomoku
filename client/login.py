@@ -5,12 +5,13 @@ from entity.user import User
 __author__ = 'wufulin'
 
 import loginUI
+import backthread
+
 from socket import *
 from PyQt4.QtCore import SIGNAL
 from PyQt4 import QtGui
 from common.tools import get_logger
 from service.userservice import UserService
-import backthread
 from main import GomokuMain
 
 
@@ -48,9 +49,9 @@ class GomokuLogin(QtGui.QWidget, loginUI.Ui_Dialog):
         登录成功回调函数
         """
         self.close()
-        self.logger.debug(msg)
+        self.logger.debug("login success --> %s" % msg)
         user = User.loads(str(msg))
-        self.hall = GomokuMain(self.sock, user)
+        self.hall = GomokuMain(self.sock, self.thread, user)
         self.hall.show()
 
     def login_failed(self, error):
@@ -63,7 +64,8 @@ class GomokuLogin(QtGui.QWidget, loginUI.Ui_Dialog):
 
     def exit(self):
         self.logger.debug("close client now")
-        self.thread.shutdown()
+        if self.thread:
+            self.thread.shutdown()
         self.close()
 
 if __name__ == '__main__':

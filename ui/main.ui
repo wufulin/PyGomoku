@@ -26,9 +26,9 @@
    <widget class="QTabWidget" name="infoWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>80</y>
-      <width>171</width>
+      <width>201</width>
       <height>461</height>
      </rect>
     </property>
@@ -39,13 +39,13 @@
      <attribute name="title">
       <string>信息</string>
      </attribute>
-     <widget class="QTableView" name="tableView">
+     <widget class="QTextBrowser" name="messageBrowser">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>7</x>
         <y>0</y>
-        <width>164</width>
-        <height>441</height>
+        <width>181</width>
+        <height>431</height>
        </rect>
       </property>
      </widget>
@@ -54,13 +54,13 @@
      <attribute name="title">
       <string>排行榜</string>
      </attribute>
-     <widget class="QTableView" name="tableView_2">
+     <widget class="QTextBrowser" name="scoreBrowser">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>7</x>
         <y>0</y>
-        <width>164</width>
-        <height>441</height>
+        <width>181</width>
+        <height>431</height>
        </rect>
       </property>
      </widget>
@@ -471,9 +471,9 @@ background-color: rgb(255, 255, 248);</string>
    <widget class="QWidget" name="logoWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>20</y>
-      <width>191</width>
+      <width>201</width>
       <height>51</height>
      </rect>
     </property>
@@ -507,7 +507,7 @@ background-color: rgb(255, 255, 248);</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_10">
+   <widget class="QLabel" name="lblScore">
     <property name="geometry">
      <rect>
       <x>700</x>

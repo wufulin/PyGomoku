@@ -13,9 +13,8 @@ class Handler(object):
 
     logger = get_logger('handler')
 
-    def __init__(self, queue):
+    def __init__(self):
         self._nexthandler = None
-        self.queue = queue
 
     def next(self, handler):
         self._nexthandler = handler
@@ -26,7 +25,7 @@ class ChessMessageHandler(Handler):
         if message['type'] < 10:
             self.logger.debug('handle chess message --> {0}'.format(str(message)))
         else:
-            self._nexthandler.handle(message)
+            return self._nexthandler.handle(message)
 
 
 class ChatMessageHandler(Handler):
@@ -34,17 +33,18 @@ class ChatMessageHandler(Handler):
         if 100 < message['type'] < 1000:
             self.logger.debug('handle chat message --> {0}'.format(str(message)))
         else:
-            self._nexthandler.handle(message)
+            return self._nexthandler.handle(message)
 
 
 class SystemMessageHandler(Handler):
     def handle(self, message):
-        type = message['type']
+        t = message['type']
         resp = None
 
-        if 1000 < type:
+        if 1000 < t:
             self.logger.debug('handle system message --> {0}'.format(str(message)))
-            if type == SYSTEM_MESSAGE.LOGIN:
+
+            if t == SYSTEM_MESSAGE.LOGIN:
                 userservice = UserService()
                 user = User.loads(message['content'])
                 result = userservice.fetch_user(user.username, user.password)
@@ -53,9 +53,9 @@ class SystemMessageHandler(Handler):
                     resp = SystemMessage.create_verified_pass(result)
                 else:
                     resp = SystemMessage.create_verified_failed(result)
+            elif t == SYSTEM_MESSAGE.LOGOUT:
+                user = User.loads(message['content'])
+                resp = SystemMessage.create_logout(user)
 
             if resp is not None:
-                self.logger.debug("send message --> %s" % resp.dumps())
-                self.queue.put(resp.dumps())
-        else:
-            self.logger.debug('can not handle --> {0}'.format(str(message)))
+                return resp

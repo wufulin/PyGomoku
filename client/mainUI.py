@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Mon Dec 16 22:02:53 2013
+# Created: Tue Dec 17 17:24:17 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -36,19 +36,19 @@ class Ui_MainWindow(object):
         self.centralwidget.setStyleSheet(_fromUtf8("background-color: rgb(255, 252, 241);"))
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.infoWidget = QtGui.QTabWidget(self.centralwidget)
-        self.infoWidget.setGeometry(QtCore.QRect(20, 80, 171, 461))
+        self.infoWidget.setGeometry(QtCore.QRect(10, 80, 201, 461))
         self.infoWidget.setObjectName(_fromUtf8("infoWidget"))
         self.tabMessages = QtGui.QWidget()
         self.tabMessages.setObjectName(_fromUtf8("tabMessages"))
-        self.tableView = QtGui.QTableView(self.tabMessages)
-        self.tableView.setGeometry(QtCore.QRect(0, 0, 164, 441))
-        self.tableView.setObjectName(_fromUtf8("tableView"))
+        self.messageBrowser = QtGui.QTextBrowser(self.tabMessages)
+        self.messageBrowser.setGeometry(QtCore.QRect(7, 0, 181, 431))
+        self.messageBrowser.setObjectName(_fromUtf8("messageBrowser"))
         self.infoWidget.addTab(self.tabMessages, _fromUtf8(""))
         self.tabScores = QtGui.QWidget()
         self.tabScores.setObjectName(_fromUtf8("tabScores"))
-        self.tableView_2 = QtGui.QTableView(self.tabScores)
-        self.tableView_2.setGeometry(QtCore.QRect(0, 0, 164, 441))
-        self.tableView_2.setObjectName(_fromUtf8("tableView_2"))
+        self.scoreBrowser = QtGui.QTextBrowser(self.tabScores)
+        self.scoreBrowser.setGeometry(QtCore.QRect(7, 0, 181, 431))
+        self.scoreBrowser.setObjectName(_fromUtf8("scoreBrowser"))
         self.infoWidget.addTab(self.tabScores, _fromUtf8(""))
         self.hallWidget = QtGui.QTabWidget(self.centralwidget)
         self.hallWidget.setGeometry(QtCore.QRect(220, 80, 551, 411))
@@ -165,7 +165,7 @@ class Ui_MainWindow(object):
         self.btnSend.setGeometry(QtCore.QRect(700, 510, 71, 32))
         self.btnSend.setObjectName(_fromUtf8("btnSend"))
         self.logoWidget = QtGui.QWidget(self.centralwidget)
-        self.logoWidget.setGeometry(QtCore.QRect(20, 20, 191, 51))
+        self.logoWidget.setGeometry(QtCore.QRect(10, 20, 201, 51))
         self.logoWidget.setStyleSheet(_fromUtf8("background-color: rgb(207, 255, 214);"))
         self.logoWidget.setObjectName(_fromUtf8("logoWidget"))
         self.avatar = QtGui.QWidget(self.centralwidget)
@@ -176,9 +176,9 @@ class Ui_MainWindow(object):
         self.lblUsername.setGeometry(QtCore.QRect(700, 30, 62, 16))
         self.lblUsername.setText(_fromUtf8(""))
         self.lblUsername.setObjectName(_fromUtf8("lblUsername"))
-        self.label_10 = QtGui.QLabel(self.centralwidget)
-        self.label_10.setGeometry(QtCore.QRect(700, 60, 62, 16))
-        self.label_10.setObjectName(_fromUtf8("label_10"))
+        self.lblScore = QtGui.QLabel(self.centralwidget)
+        self.lblScore.setGeometry(QtCore.QRect(700, 60, 62, 16))
+        self.lblScore.setObjectName(_fromUtf8("lblScore"))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -203,5 +203,5 @@ class Ui_MainWindow(object):
         self.lblRight4.setText(_translate("MainWindow", "user2", None))
         self.hallWidget.setTabText(self.hallWidget.indexOf(self.tabHall1), _translate("MainWindow", "大厅1", None))
         self.btnSend.setText(_translate("MainWindow", "发送", None))
-        self.label_10.setText(_translate("MainWindow", "积分：10", None))
+        self.lblScore.setText(_translate("MainWindow", "积分：10", None))
 

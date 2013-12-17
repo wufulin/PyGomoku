@@ -15,3 +15,11 @@ class UserService(object):
         user = User(username, password)
         msg = SystemMessage.create_login(user)
         self.thread.add_msg(msg)
+
+    def logoutByUser(self, username):
+        user = User(username, "")
+        msg = SystemMessage.create_logout(user)
+        self.thread.add_msg(msg)
+
+    def fetchAllUser(self):
+        msg = SystemMessage

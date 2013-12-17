@@ -14,6 +14,7 @@ class BackThread(QtCore.QThread):
 
     login_success_signal = QtCore.pyqtSignal(str)
     login_failed_signal = QtCore.pyqtSignal(str)
+    logout_signal = QtCore.pyqtSignal(str)
 
     def __init__(self, sock):
         super(BackThread, self).__init__()
@@ -43,13 +44,20 @@ class BackThread(QtCore.QThread):
                 for s in read_sockets:
                     # 接收服务端发来的消息
                     data = s.recv(BUFSIZE)
-                    if data != "":
+                    if data:
                         resp = json.loads(data, encoding='utf-8')
-                        type = resp['type']
-                        if type == SYSTEM_MESSAGE.VERIFIED_PASS:
+                        t = resp['type']
+                        if t == SYSTEM_MESSAGE.VERIFIED_PASS:
                             self.login_success_signal.emit(resp['content'])
-                        elif type == SYSTEM_MESSAGE.VERIFIED_FAIL:
+                        elif t == SYSTEM_MESSAGE.VERIFIED_FAIL:
                             self.login_failed_signal.emit(resp['content'])
+                        elif t == SYSTEM_MESSAGE.LOGOUT:
+                            self.logout_signal.emit(resp['content'])
+                    else:
+                        if s in self.outputs:
+                            self.outputs.remove(s)
+                        self.inputs.remove(s)
+                        s.close()
 
                 for s in write_sockets:
                     if self.sendqueue.qsize() > 0:
